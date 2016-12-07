@@ -49,6 +49,8 @@ def access_notes(id=-1):
         print int(id)
         print type(id)
         results = book.fetch_notes(id)
+        if len(results) == 0: 
+            return jsonify({'id':str(id), 'message':'Not found'}), 404
         #result = [notebook.parse_note_time(obj) for obj in results]
         return jsonify(results)
     elif request.method == 'PUT':
