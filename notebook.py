@@ -1,7 +1,9 @@
 from datetime import datetime
 from google.cloud import datastore
+
 import utility
 
+from flask import jsonify
 
 class NoteBook:
 
@@ -43,9 +45,15 @@ class NoteBook:
     def delete_notes(self, id):
         id_filter = [('id', '=', int(id))]
         query = self.ds.query(kind=self.kind, filters=id_filter)
-        for item in query.fetch(): 
-            self.ds.delete(item)
-        return '',200
+        results = list()
+        for entity in list(query.fetch()):
+            results.append(entity)
+        if len(results) == 0: 
+            return jsonify({'id':str(id), 'message':'Not found'}), 404
+
+        print type(results[0]), str(results[0]), len(results)
+        self.ds.delete(results[0].key)
+        return '', 200
         
 
 def parse_note_time(note):

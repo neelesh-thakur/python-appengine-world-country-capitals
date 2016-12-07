@@ -58,8 +58,7 @@ def access_notes(id=-1):
         return "done"
     elif request.method == 'DELETE':
         try:
-            book.delete_notes(id)
-            return '',200
+            return book.delete_notes(id)
         except:
             return 500
     
