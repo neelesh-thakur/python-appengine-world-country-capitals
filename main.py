@@ -16,6 +16,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
+
     """hello world"""
     return 'Hello World!'
 
@@ -38,22 +39,32 @@ def pubsub_receive():
     return jsonify(data), 200
 
 
-@app.route('/notes', methods=['POST', 'GET'])
-def access_notes():
+@app.route('/api/capitals/<id>', methods=['PUT', 'GET'])
+
+def access_notes(id=-1):
     """inserts and retrieves notes from datastore"""
 
     book = notebook.NoteBook()
     if request.method == 'GET':
-        results = book.fetch_notes()
-        result = [notebook.parse_note_time(obj) for obj in results]
-        return jsonify(result)
-    elif request.method == 'POST':
+        if id == -1:
+            results = book.fetch_all()
+        else:
+            print id
+            results = book.fetch_notes(id)
+        #result = [notebook.parse_note_time(obj) for obj in results]
+        return jsonify(results)
+    elif request.method == 'PUT':
         print json.dumps(request.get_json())
-        text = request.get_json()['text']
-        book.store_note(text)
+        request_json = request.get_json()
+        book.store_note(request_json, id)
         return "done"
 
-
+@app.route('/api/status', methods=['GET'])
+def get_status():
+    """check the status of datastore and return True/False"""
+    response = {'insert':True, 'fetch':True, 'delete':True, 'list':True }
+    return jsonify(response), 200 
+    
 @app.errorhandler(500)
 def server_error(err):
     """Error handler"""

@@ -5,7 +5,7 @@ from google.appengine.ext import vendor
 # (this is set by Google when running on GAE in the cloud)
 if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine/'):
     # on mac
-    vendor.add('venv/lib/python2.7/site-packages')
+    #vendor.add('venv/lib/python2.7/site-packages')
 
     # on windows
-    # vendor.add('venv/Lib/site-packages')
+    vendor.add('venv/Lib/site-packages')

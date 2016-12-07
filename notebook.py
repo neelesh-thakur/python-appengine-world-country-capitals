@@ -7,18 +7,30 @@ class NoteBook:
 
     def __init__(self):
         self.ds = datastore.Client(project=utility.project_id())
-        self.kind = "Note"
-
-    def store_note(self, comment):
+        self.kind = "Country"
+       
+    def store_note(self, request_json, id):
         key = self.ds.key(self.kind)
         entity = datastore.Entity(key)
-
-        entity['text'] = comment
+        entity['id'] = request_json['id']
+        entity['country'] = request_json['country']
+        entity['name'] = request_json['name']
+        entity['location'] = datastore.Entity(key=self.ds.key('EmbeddedKind'))
+        entity['location']['latitude'] = request_json['location']['latitude']
+        entity['location']['longitude'] = request_json['location']['longitude']
+        entity['countryCode'] = request_json['countryCode']
+        entity['continent'] = request_json['continent']
         entity['timestamp'] = datetime.utcnow()
 
-        return self.ds.put(entity)
+        return self.ds.put(entity), 200
 
-    def fetch_notes(self):
+    def fetch_notes(self, id):
+        query = self.ds.query(kind=self.kind)
+        query.filter = ['id =', id]
+        query.order = ['-timestamp']
+        return self.get_query_results(query)
+
+    def fetch_all(self):
         query = self.ds.query(kind=self.kind)
         query.order = ['-timestamp']
         return self.get_query_results(query)
