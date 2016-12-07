@@ -52,7 +52,8 @@ class NoteBook:
             return jsonify({'id':str(id), 'message':'Not found'}), 404
 
         print type(results[0]), str(results[0]), len(results)
-        self.ds.delete(results[0].key)
+        for e in results:
+            self.ds.delete(e.key)
         return '', 200
         
 
