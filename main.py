@@ -39,18 +39,16 @@ def pubsub_receive():
     return jsonify(data), 200
 
 
-@app.route('/api/capitals/<id>', methods=['PUT', 'GET'])
+@app.route('/api/capitals/<id>', methods=['PUT', 'GET', 'DELETE'])
 
 def access_notes(id=-1):
     """inserts and retrieves notes from datastore"""
 
     book = notebook.NoteBook()
     if request.method == 'GET':
-        if id == -1:
-            results = book.fetch_all()
-        else:
-            print id
-            results = book.fetch_notes(id)
+        print int(id)
+        print type(id)
+        results = book.fetch_notes(id)
         #result = [notebook.parse_note_time(obj) for obj in results]
         return jsonify(results)
     elif request.method == 'PUT':
@@ -58,6 +56,22 @@ def access_notes(id=-1):
         request_json = request.get_json()
         book.store_note(request_json, id)
         return "done"
+    elif request.method == 'DELETE':
+        try:
+            book.delete_notes(id)
+            return '',200
+        except:
+            return 500
+    
+@app.route('/api/capitals', methods=['GET'])
+
+def fetch_all():
+    """inserts and retrieves notes from datastore"""
+
+    book = notebook.NoteBook()
+    if request.method == 'GET':
+        results = book.fetch_all()
+        return jsonify(results)
 
 @app.route('/api/status', methods=['GET'])
 def get_status():

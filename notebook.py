@@ -25,9 +25,8 @@ class NoteBook:
         return self.ds.put(entity), 200
 
     def fetch_notes(self, id):
-        query = self.ds.query(kind=self.kind)
-        query.filter = ['id =', id]
-        query.order = ['-timestamp']
+        id_filter = [('id', '=', int(id))]
+        query = self.ds.query(kind=self.kind, filters=id_filter)
         return self.get_query_results(query)
 
     def fetch_all(self):
@@ -40,7 +39,14 @@ class NoteBook:
         for entity in list(query.fetch()):
             results.append(dict(entity))
         return results
-
+    
+    def delete_notes(self, id):
+        id_filter = [('id', '=', int(id))]
+        query = self.ds.query(kind=self.kind, filters=id_filter)
+        for item in query.fetch(): 
+            self.ds.delete(item)
+        return '',200
+        
 
 def parse_note_time(note):
     """converts a greeting to an object"""
