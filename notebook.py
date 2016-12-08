@@ -22,7 +22,7 @@ class NoteBook:
         entity['location']['longitude'] = request_json['location']['longitude']
         entity['countryCode'] = request_json['countryCode']
         entity['continent'] = request_json['continent']
-        entity['timestamp'] = datetime.utcnow()
+        #entity['timestamp'] = datetime.utcnow()
 
         return self.ds.put(entity), 200
 
@@ -33,7 +33,7 @@ class NoteBook:
 
     def fetch_all(self):
         query = self.ds.query(kind=self.kind)
-        query.order = ['-timestamp']
+        #query.order = ['-timestamp']
         return self.get_query_results(query)
 
     def get_query_results(self, query):

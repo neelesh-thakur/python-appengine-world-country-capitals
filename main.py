@@ -6,6 +6,7 @@ import base64
 
 from flask import Flask, request
 from flask import jsonify
+from google.cloud import pubsub
 
 import notebook
 import utility
@@ -102,6 +103,20 @@ def fetch_and_store_in_bucket(id=-1):
     except:
         return 500
 
+
+@app.route('/api/capitals/<id>/publish', methods=['POST'])
+def publish(id=-1):
+    book = notebook.NoteBook()
+    results = book.fetch_notes(id)
+    if len(results) == 0:
+        return jsonify({'code':str(id), 'message':'Capital not found'}), 404
+    client = pubsub.Client()
+    body = request.get_json()
+    topic_name = body[u'topic']
+    topic = client.topic(str(topic_name))
+    data = str(results).encode('utf-8')
+    topic.publish(data)
+    return "", 200
 
 @app.errorhandler(500)
 def server_error(err):
