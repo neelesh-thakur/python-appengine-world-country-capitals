@@ -166,8 +166,8 @@ def publish(id=-1):
         print "pubsub client", client
 
         topic = client.topic(topic_name_from_body)
-        topic.publish(data)
-        return jsonify({'messageId':str(id)}), 200
+        message_id = topic.publish(data)
+        return jsonify({'messageId':message_id}), 200
     except Exception as e:
         server_error(e)
 
