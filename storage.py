@@ -39,11 +39,14 @@ class Storage:
 
         if self.check_bucket(bucket_name):
             try:
+                print "content: ", content
                 print "inside store_file_to_gcs"
                 bucket = self.gcs.get_bucket(bucket_name)
                 print bucket
                 blob = Blob(filename, bucket)
-                blob.upload_from_string(content)
+                print "blob", blob
+                blob.upload_from_string(content, content_type='application/json')
+                print "upload successful"
                 return True
             except IOError as e:
                 print e

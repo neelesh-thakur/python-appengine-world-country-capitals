@@ -26,6 +26,37 @@ class NoteBook:
 
         return self.ds.put(entity), 200
 
+    def fetch_notes_by_attribute(self, query_attr, query_value):
+        id_filter = [(query_attr, '=', query_value)]
+        query = self.ds.query(kind=self.kind, filters=id_filter)
+        return self.get_query_results(query)
+
+    def fetch_notes_any_attribute(self, search_value):
+        if (search_value.isdigit()):
+            print "fetch_notes_any_attribute - is digit"
+            result = self.get_query_results(self.ds.query(kind=self.kind, filters=[('id', '=', int(search_value))]))
+            return result
+
+        result = self.get_query_results(self.ds.query(kind=self.kind, filters=[('country', '=', search_value)]))
+        if len(result) > 0:
+            return result
+
+        result = self.get_query_results(self.ds.query(kind=self.kind, filters=[('name', '=', search_value)]))
+        if len(result) > 0:
+            return result
+
+        result = self.get_query_results(self.ds.query(kind=self.kind, filters=[('countryCode', '=', search_value)]))
+        if len(result) > 0:
+            return result
+
+        result = self.get_query_results(self.ds.query(kind=self.kind, filters=[('continent', '=', search_value)]))
+        if len(result) > 0:
+            return result
+
+        return []
+
+    
+
     def fetch_notes(self, id):
         id_filter = [('id', '=', int(id))]
         query = self.ds.query(kind=self.kind, filters=id_filter)
@@ -34,6 +65,10 @@ class NoteBook:
     def fetch_all(self):
         query = self.ds.query(kind=self.kind)
         #query.order = ['-timestamp']
+        return self.get_query_results(query)
+
+    def fetch_all_unique(self):
+        query = self.ds.query(kind=self.kind, distinct=True)
         return self.get_query_results(query)
 
     def get_query_results(self, query):
