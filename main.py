@@ -9,10 +9,11 @@ from flask import jsonify
 
 import notebook
 import utility
-
+import storage
+import StringIO
 
 app = Flask(__name__)
-
+gcs = storage.Storage()
 
 @app.route('/')
 def hello_world():
@@ -45,27 +46,26 @@ def access_notes(id=-1):
     """inserts and retrieves notes from datastore"""
 
     book = notebook.NoteBook()
-    if request.method == 'GET':
-        print int(id)
-        print type(id)
-        results = book.fetch_notes(id)
-        if len(results) == 0: 
-            return jsonify({'id':str(id), 'message':'Not found'}), 404
-        #result = [notebook.parse_note_time(obj) for obj in results]
-        return jsonify(results)
-    elif request.method == 'PUT':
-        print json.dumps(request.get_json())
-        request_json = request.get_json()
-        book.store_note(request_json, id)
-        return "done"
-    elif request.method == 'DELETE':
-        try:
-            return book.delete_notes(id)
-        except:
-            return 500
-    
-@app.route('/api/capitals', methods=['GET'])
+    integer_id = int(id)
+    try:
+        if request.method == 'GET':
+            results = book.fetch_notes(integer_id)
+            if len(results) == 0:
+                return jsonify({'code':integer_id, 'message':'Capital record not found'}), 404
+            print type(results[0])
+            return jsonify(results[0]), 200
+        elif request.method == 'PUT':
+            print json.dumps(request.get_json())
+            request_json = request.get_json()
+            book.store_note(request_json, integer_id)
+            return "", 200
+        elif request.method == 'DELETE':
+            return book.delete_notes(integer_id)
+    except Exception as e:
+         return server_error(e)
 
+
+@app.route('/api/capitals', methods=['GET'])
 def fetch_all():
     """inserts and retrieves notes from datastore"""
 
@@ -74,12 +74,35 @@ def fetch_all():
         results = book.fetch_all()
         return jsonify(results)
 
+
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """check the status of datastore and return True/False"""
-    response = {'insert':True, 'fetch':True, 'delete':True, 'list':True }
-    return jsonify(response), 200 
-    
+
+    response = {'insert':True, 'fetch':True, 'delete':True, 'list':True, 'query':True, 'search':True, 'pubsub':True, 'storage':True}
+    return jsonify(response), 200
+
+
+@app.route('/api/capitals/<id>/store', methods=['POST'])
+def fetch_and_store_in_bucket(id=-1):
+    """retrieves notes from datastore and store in bucket"""
+
+    book = notebook.NoteBook()
+    try:
+        results = book.fetch_notes(id)
+        if len(results) == 0:
+            return jsonify({'code':str(id), 'message':'Capital not found'}), 404
+        body = request.get_json()
+        bucket_name = body[u'bucket']
+        store_to_gcs = gcs.store_file_to_gcs(str(bucket_name), str(id), str(results[0]))
+        if store_to_gcs:
+            return "", 200
+        else:
+            return jsonify({'code':str(id), 'message':'Bucket not found'}), 404
+    except:
+        return 500
+
+
 @app.errorhandler(500)
 def server_error(err):
     """Error handler"""

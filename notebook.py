@@ -41,21 +41,21 @@ class NoteBook:
         for entity in list(query.fetch()):
             results.append(dict(entity))
         return results
-    
+
     def delete_notes(self, id):
         id_filter = [('id', '=', int(id))]
         query = self.ds.query(kind=self.kind, filters=id_filter)
         results = list()
         for entity in list(query.fetch()):
             results.append(entity)
-        if len(results) == 0: 
-            return jsonify({'id':str(id), 'message':'Not found'}), 404
+        if len(results) == 0:
+            return jsonify({'code':404, 'message':'Capital record not found'}), 404
 
         print type(results[0]), str(results[0]), len(results)
         for e in results:
             self.ds.delete(e.key)
         return '', 200
-        
+
 
 def parse_note_time(note):
     """converts a greeting to an object"""

@@ -19,8 +19,12 @@ import json
 import os
 import socket
 
-from oauth2client import _helpers
+from oauth2client._helpers import _to_bytes
 from oauth2client import client
+
+# Expose utcnow() at module level to allow for
+# easier testing (by replacing with a stub).
+_UTCNOW = datetime.datetime.utcnow
 
 DEVSHELL_ENV = 'DEVSHELL_CLIENT_PORT'
 
@@ -79,8 +83,8 @@ def _SendRecv():
     sock.connect(('localhost', port))
 
     data = CREDENTIAL_INFO_REQUEST_JSON
-    msg = '{0}\n{1}'.format(len(data), data)
-    sock.sendall(_helpers._to_bytes(msg, encoding='utf-8'))
+    msg = '%s\n%s' % (len(data), data)
+    sock.sendall(_to_bytes(msg, encoding='utf-8'))
 
     header = sock.recv(6).decode()
     if '\n' not in header:
@@ -123,7 +127,7 @@ class DevshellCredentials(client.GoogleCredentials):
         expires_in = self.devshell_response.expires_in
         if expires_in is not None:
             delta = datetime.timedelta(seconds=expires_in)
-            self.token_expiry = client._UTCNOW() + delta
+            self.token_expiry = _UTCNOW() + delta
         else:
             self.token_expiry = None
 

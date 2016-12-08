@@ -35,7 +35,7 @@ pip install -r requirements.txt
 python main.py
 
 # deploy
-gcloud app deploy --project=the-depot --version=v1 ./app.std.yaml
+gcloud app deploy --project=hackathon-team-010 --version=v1 ./app.std.yaml
 
 # browse to
 (service) https://talk-demo-dot-<projectname>.appspot.com
