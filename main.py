@@ -23,6 +23,7 @@ def hello_world():
     """hello world"""
     return 'Hello World!'
 
+
 @app.route('/pubsub/receive', methods=['POST'])
 def pubsub_receive():
     """dumps a received pubsub message to the log"""
@@ -43,7 +44,6 @@ def pubsub_receive():
 
 
 @app.route('/api/capitals/<id>', methods=['PUT', 'GET', 'DELETE'])
-
 def access_notes(id=-1):
     """inserts and retrieves notes from datastore"""
 
@@ -64,23 +64,26 @@ def access_notes(id=-1):
         elif request.method == 'DELETE':
             return book.delete_notes(integer_id)
     except Exception as e:
-         return server_error(e)
+        return server_error(e)
 
 
 @app.route('/api/capitals', methods=['GET'])
 def fetch_all():
     """inserts and retrieves notes from datastore"""
+
     if request.method == 'GET':
         return get_all_capitals()
 
 def get_all_capitals():
+    """Get all capitals"""
+
     query = request.args.get('query')
     if query is not None:
         print 'GET-query request received'
         query_attr, query_value = query.split(":")
         print 'query_attr:', query_attr, ', query_value:', query_value
         return query_capitals(query_attr, query_value)
-        
+
     search = request.args.get('search')
     if search is not None:
         print 'GET-search request received'
@@ -88,7 +91,7 @@ def get_all_capitals():
         print 'search_value:', search_value
         return search_capitals(search_value)
 
-    qstr = request.query_string    
+    qstr = request.query_string
     if qstr is None or len(qstr) == 0:
         print 'GET request received: '
         book = notebook.NoteBook()
@@ -150,6 +153,8 @@ def fetch_and_store_in_bucket(id=-1):
 
 @app.route('/api/capitals/<id>/publish', methods=['POST'])
 def publish(id=-1):
+    """Publish to global topic specified in body"""
+
     try:
         book = notebook.NoteBook()
         results = book.fetch_notes(id)
@@ -169,8 +174,7 @@ def publish(id=-1):
 
         topic = client.topic(topic_name_from_body)
         message_id = topic.publish(data)
-        message_return = jsonify({'messageId':int(message_id)})
-        return message_return, 200
+        return jsonify({'messageId':int(message_id)}), 200
     except Exception as e:
         server_error(e)
 
@@ -184,8 +188,11 @@ def server_error(err):
     See logs for full stacktrace.
     """.format(err), 500
 
+
 def error(code, message):
+    """jsonify error code"""
     return jsonify({'code':int(code), 'message':str(message)})
+
 
 def convert_keys_to_string(dictionary):
     """Recursively converts dictionary keys to strings."""
