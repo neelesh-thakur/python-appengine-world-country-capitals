@@ -68,8 +68,27 @@ class NoteBook:
         return self.get_query_results(query)
 
     def fetch_all_unique(self):
-        query = self.ds.query(kind=self.kind, distinct=True)
+        query = self.ds.query(kind=self.kind)
+        query.distinct_on = ["id"]
         return self.get_query_results(query)
+
+
+    ''''
+
+    result_with_url = list()
+        for entity in results
+
+    def fetch_all_unique_by_id(self)
+        results = list()
+        results_dict = dict()
+        count = 0
+        for entity in list(book.fetch_all()):
+        if not results_dict.__contains__(entity)
+            results.append(entity)
+            count = count + 1
+            if count == 20:
+            break
+    '''
 
     def get_query_results(self, query):
         results = list()

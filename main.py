@@ -3,15 +3,15 @@
 import logging
 import json
 import base64
+import StringIO
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask import jsonify
 from google.cloud import pubsub
 
 import notebook
 import utility
 import storage
-import StringIO
 
 
 app = Flask(__name__)
@@ -19,10 +19,22 @@ gcs = storage.Storage()
 
 @app.route('/')
 def hello_world():
-
     """hello world"""
-    return 'Hello World!'
 
+    book = notebook.NoteBook()
+    results = book.fetch_all_unique()
+    result_url = "https://www.google.com/#q="
+    return render_template('index.html', comment=None, results=results)
+    #return 'Hello World!'
+
+@app.route('/task1')
+def task1_world():
+    """hello world"""
+
+    book = notebook.NoteBook()
+    results = book.fetch_all_unique()
+    return render_template('main.html', comment=None, results=results)
+    #return 'Hello World!'
 
 @app.route('/pubsub/receive', methods=['POST'])
 def pubsub_receive():

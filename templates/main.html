@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <title>App Engine World Country</title>
 <center><h1> AppEngine World Country</h1></center>
-<HR>
-{% if results %}
-    {% for result in results %}
-        <!--<B>{{ result.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</B>-->
-        <BR> {{ result.id }} <BR>
-        <BR> {{ result.country }} <BR>
-        <BR> {{ result.name }} <BR>
-    {% endfor %}
-{% endif %}
+<body>
+    <table>
+        {% if results %}
+            {% for result in results %}
+                <tr>
+                    <th> {{ result.name }}</th>
+                    <td> {{ result.country }} </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
+</body>
+
 <BR><BR>
 <form action="/" method="post">
     <p>
