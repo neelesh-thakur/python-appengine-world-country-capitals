@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>App Engine World Country</title>
+<center><h1> AppEngine World Country</h1></center>
+<HR>
+{% if results %}
+    {% for result in results %}
+        <!--<B>{{ result.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</B>-->
+        <BR> {{ result.id }} <BR>
+        <BR> {{ result.country }} <BR>
+        <BR> {{ result.name }} <BR>
+    {% endfor %}
+{% endif %}
+<BR><BR>
+<form action="/" method="post">
+    <p>
+        Please sign:
+        <input name="comment">
+        <br>
+    </p>
+    <p><input type="submit" value="Submit"></p>
+</form>

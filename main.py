@@ -98,6 +98,7 @@ def get_all_capitals():
     print '*** unexpected GET request received: ', qstr
     return error(404, 'Unexpected error')
 
+
 def query_capitals(attr, value):
     book = notebook.NoteBook()
     if attr == "location.latitude" or attr == "location.longitude":
@@ -109,11 +110,12 @@ def query_capitals(attr, value):
     else:
         return error(404, 'Invalid attriute name: ' + attr)
 
+
 def search_capitals(search_value):
     book = notebook.NoteBook()
     results = book.fetch_notes_any_attribute(search_value)
     return jsonify(results)
-    #return jsonify({'code':404, 'message':'Not implemented'})
+
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
@@ -167,7 +169,8 @@ def publish(id=-1):
 
         topic = client.topic(topic_name_from_body)
         message_id = topic.publish(data)
-        return jsonify({'messageId':message_id}), 200
+        message_return = jsonify({'messageId':int(message_id)})
+        return message_return, 200
     except Exception as e:
         server_error(e)
 
